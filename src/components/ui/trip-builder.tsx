@@ -169,20 +169,11 @@ export function TripBuilder({ initialDays, onSave }: TripBuilderProps) {
                           title={activity.name}
                           time={activity.time}
                           description={
-                            <>
-                              {activity.location && (
-                                <span className="flex items-center gap-1">
-                                  <MapPin className="h-3 w-3" />
-                                  {activity.location}
-                                </span>
-                              )}
-                              {activity.cost !== undefined && activity.cost > 0 && (
-                                <span className="flex items-center gap-1">
-                                  <DollarSign className="h-3 w-3" />
-                                  {formatCurrency(activity.cost)}
-                                </span>
-                              )}
-                            </>
+                            activity.location && activity.cost !== undefined && activity.cost > 0 
+                              ? `${activity.location} - ${formatCurrency(activity.cost)}`
+                              : activity.location || (activity.cost !== undefined && activity.cost > 0 
+                                ? formatCurrency(activity.cost) 
+                                : undefined)
                           }
                           icon={<Clock className="h-4 w-4" />}
                           isLast={index === day.activities.length - 1}

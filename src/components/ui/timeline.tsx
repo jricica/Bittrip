@@ -1,9 +1,10 @@
 import { cn } from "@/lib/utils";
+import { ReactNode } from "react";
 
 interface TimelineItemProps {
   title: string;
   time?: string;
-  description?: string;
+  description?: string | ReactNode;
   icon?: React.ReactNode;
   isLast?: boolean;
 }
@@ -22,7 +23,11 @@ export function TimelineItem({ title, time, description, icon, isLast }: Timelin
           <h3 className="font-medium">{title}</h3>
           {time && <span className="text-xs text-muted-foreground">{time}</span>}
         </div>
-        {description && <p className="mt-1 text-sm text-muted-foreground">{description}</p>}
+        {description && (
+          typeof description === 'string' 
+            ? <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+            : <div className="mt-1 text-sm text-muted-foreground">{description}</div>
+        )}
       </div>
     </div>
   );
