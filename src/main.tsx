@@ -14,6 +14,11 @@ import Index from "./pages";
 import LoginForm from "./pages/login";
 import SignupForm from "./pages/signup";
 import Logout from "./pages/logout";
+import TripsPage from "./pages/trips";
+import AddTripPage from "./pages/add-trip";
+import WalletPage from "./pages/wallet";
+import ProfilePage from "./pages/profile";
+
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
@@ -23,6 +28,10 @@ createRoot(document.getElementById("root")!).render(
         <BrowserRouter>
           <Routes>
             <Route path='/' element={<Index />} />
+            <Route path='/trips' element={<TripsPage />} />
+            <Route path='/add-trip' element={<AddTripPage />} />
+            <Route path='/wallet' element={<WalletPage />} />
+            <Route path='/profile' element={<ProfilePage />} />
             <Route path='/login' element={<LoginForm />} />
             <Route path='/signup' element={<SignupForm />} />
             <Route path='/logout' element={<Logout />} />
