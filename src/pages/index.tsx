@@ -1,3 +1,4 @@
+import * as React from "react";
 import { useState, useEffect } from "react";
 import { AppLayout } from "@/components/layout/app-layout";
 import { CategoryCard } from "@/components/ui/category-card";
@@ -79,7 +80,7 @@ const Index = () => {
         <section className="mb-8">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-xl font-semibold">Viajes Sugeridos</h2>
-            <Button variant="link" size="sm" onClick={() => navigate("/trips")}>
+            <Button onClick={() => navigate("/trips")}>
               Ver todos
             </Button>
           </div>
