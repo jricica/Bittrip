@@ -37,11 +37,8 @@ const Index = () => {
   }, [toast]);
 
   const handleCategoryClick = (categoryId: string) => {
-    // In a real app, this would filter content or navigate to category details
-    toast({
-      title: "Categoría seleccionada",
-      description: `Has seleccionado la categoría ${categoryId}`,
-    });
+    // Redirige a la página de categoría
+    navigate(`/categories/${categoryId}`);
   };
 
   const handleSaveTrip = (days: any) => {
@@ -54,8 +51,8 @@ const Index = () => {
 
   return (
     <AppLayout>
-      <div className="container mx-auto px-4 py-6">
-        <h1 className="mb-6 text-2xl font-bold">BitTrip</h1>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-100 px-6 py-10 text-center">
+        <h1 className="text-4xl font-extrabold text-gray-800 mb-4 tracking-tight">BitTrip</h1>
         
         <section className="mb-8">
           <h2 className="mb-4 text-xl font-semibold">Explora Categorías</h2>
