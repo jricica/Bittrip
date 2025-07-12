@@ -39,12 +39,12 @@ app.post('/trips', async (req, res) => {
 
 // --- TRIP DAYS ---
 app.get('/trip-days', async (req, res) => {
-  const { data, error } = await supabase.from('tripDays').select('*');
+  const { data, error } = await supabase.from('trip_days').select('*');
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
 app.post('/trip-days', async (req, res) => {
-  const { data, error } = await supabase.from('tripDays').insert([req.body]);
+  const { data, error } = await supabase.from('trip_days').insert([req.body]);
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
@@ -59,20 +59,52 @@ app.post('/activities', async (req, res) => {
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
-// --- GIFT CARDS ---
+// --- USER'S GIFT CARD PURCHASES ---
 app.get('/gift-cards', async (req, res) => {
-  const { data, error } = await supabase.from('giftCards').select('*');
+  const { data, error } = await supabase.from('gift_cards').select('*');
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
 app.post('/gift-cards', async (req, res) => {
-  const { data, error } = await supabase.from('giftCards').insert([req.body]);
+  const { data, error } = await supabase.from('gift_cards').insert([req.body]);
+  error ? res.status(500).json({ error: error.message }) : res.json(data);
+});
+
+// --- ALL GIFT CARDS (DAILY API SYNC) ---
+app.get('/all-giftcards', async (req, res) => {
+  const { data, error } = await supabase.from('all_giftcards').select('*').eq('is_active', true);
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
 // --- CATEGORIES ---
 app.get('/categories', async (req, res) => {
   const { data, error } = await supabase.from('categories').select('*');
+  error ? res.status(500).json({ error: error.message }) : res.json(data);
+});
+
+// --- PLANS (CARTS) ---
+app.get('/plans', async (req, res) => {
+  const { data, error } = await supabase.from('plans').select('*');
+  error ? res.status(500).json({ error: error.message }) : res.json(data);
+});
+
+app.post('/plans', async (req, res) => {
+  const { data, error } = await supabase.from('plans').insert([req.body]);
+  error ? res.status(500).json({ error: error.message }) : res.json(data);
+});
+
+// --- PLAN GIFT CARDS (CART ITEMS) ---
+app.get('/plan-giftcards', async (req, res) => {
+  const { plan_id } = req.query;
+  const query = supabase.from('plan_giftcards').select('*');
+  if (plan_id) query.eq('plan_id', plan_id);
+
+  const { data, error } = await query;
+  error ? res.status(500).json({ error: error.message }) : res.json(data);
+});
+
+app.post('/plan-giftcards', async (req, res) => {
+  const { data, error } = await supabase.from('plan_giftcards').insert([req.body]);
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
