@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 
-import Index from "@/pages";
+import DashboardPage from "@/pages/dashboard";
 import LoginForm from "@/pages/login";
 import SignupForm from "@/pages/signup";
 import Logout from "@/pages/logout";
@@ -17,6 +17,9 @@ import AddTripPage from "@/pages/add-trip";
 import WalletPage from "@/pages/wallet";
 import ProfilePage from "@/pages/profile";
 import CategoryDetail from "@/pages/categories/CategoryDetail";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
+import AuthRedirect from "@/components/auth/AuthRedirect";
+import { AuthProvider } from "@/context/AuthContext";
 
 import "./index.css";
 
@@ -27,17 +30,62 @@ createRoot(document.getElementById("root")!).render(
     <TooltipProvider>
       <ThemeProvider>
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/trips" element={<TripsPage />} />
-            <Route path="/add-trip" element={<AddTripPage />} />
-            <Route path="/wallet" element={<WalletPage />} />
-            <Route path="/profile" element={<ProfilePage />} />
-            <Route path="/login" element={<LoginForm />} />
-            <Route path="/signup" element={<SignupForm />} />
-            <Route path="/logout" element={<Logout />} />
-            <Route path="/categories/:categoryId" element={<CategoryDetail />} />
-          </Routes>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<AuthRedirect />} />
+              <Route
+                path="/dashboard"
+                element={
+                  <ProtectedRoute>
+                    <DashboardPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/trips"
+                element={
+                  <ProtectedRoute>
+                    <TripsPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/add-trip"
+                element={
+                  <ProtectedRoute>
+                    <AddTripPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/wallet"
+                element={
+                  <ProtectedRoute>
+                    <WalletPage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <ProfilePage />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/login" element={<LoginForm />} />
+              <Route path="/signup" element={<SignupForm />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route
+                path="/categories/:categoryId"
+                element={
+                  <ProtectedRoute>
+                    <CategoryDetail />
+                  </ProtectedRoute>
+                }
+              />
+            </Routes>
+          </AuthProvider>
         </BrowserRouter>
         <Sonner />
         <Toaster />
