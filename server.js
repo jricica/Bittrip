@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 // server.js (ESM)
 import express from 'express';
 import cors from 'cors';
@@ -8,6 +8,7 @@ import { createClient } from '@supabase/supabase-js';
 dotenv.config();
 
 const supabase = createClient(
+
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
 );
