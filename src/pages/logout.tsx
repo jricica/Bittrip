@@ -1,14 +1,13 @@
-import { fine } from "@/lib/fine";
 import { useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export default function Logout() {
-  if (!fine) return <Navigate to='/' />;
-
-  const { isPending, data } = fine.auth.useSession();
+  const navigate = useNavigate();
   useEffect(() => {
-    if (!isPending && data) fine.auth.signOut();
-  }, [data]);
+    fetch('http://localhost:3001/api/logout', { method: 'POST' }).finally(() => {
+      navigate('/login');
+    });
+  }, [navigate]);
 
-  return !isPending && !data ? <Navigate to='/login' /> : null;
+  return null;
 }

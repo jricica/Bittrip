@@ -1,8 +1,8 @@
 import type React from "react";
 
 import { useState } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
-import { fine } from "@/lib/fine";
+import { useNavigate, Link } from "react-router-dom";
+import { useSignup } from "@/hooks/useSignup";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -58,6 +58,8 @@ export default function SignupForm() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const { signup } = useSignup();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -65,52 +67,16 @@ export default function SignupForm() {
 
     setIsLoading(true);
 
-    try {
-      const { data, error } = await fine.auth.signUp.email(
-        {
-          email: formData.email,
-          password: formData.password,
-          name: formData.name,
-          callbackURL: "/",
-        },
-        {
-          onRequest: () => {
-            setIsLoading(true);
-          },
-          onSuccess: () => {
-            toast({
-              title: "Account created",
-              description: "Please check your email to verify your account.",
-            });
-            navigate("/login");
-          },
-          onError: (ctx) => {
-            toast({
-              title: "Error",
-              description: ctx.error.message,
-              variant: "destructive",
-            });
-          },
-        }
-      );
-
-      if (error) {
-        throw error;
-      }
-    } catch (error: any) {
-      toast({
-        title: "Error",
-        description: error.message || "Something went wrong. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    const result = await signup(formData.email, formData.password);
+    if (result.error) {
+      toast({ title: "Error", description: result.error, variant: "destructive" });
+    } else {
+      toast({ title: "Account created", description: "Please check your email." });
+      navigate("/login");
     }
-  };
 
-  if (!fine) return <Navigate to='/dashboard' />;
-  const { isPending, data } = fine.auth.useSession();
-  if (!isPending && data) return <Navigate to='/dashboard' />;
+    setIsLoading(false);
+  };
 
   return (
     <div className='container mx-auto flex h-screen items-center justify-center py-10'>
