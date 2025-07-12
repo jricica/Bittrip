@@ -1,7 +1,7 @@
 import type React from "react";
 import { useState } from "react";
-import { useNavigate, Link, Navigate } from "react-router-dom";
-import { fine } from "@/lib/fine";
+import { useNavigate, Link } from "react-router-dom";
+import { useLogin } from "@/hooks/useLogin";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -56,6 +56,8 @@ export default function LoginForm() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const { login } = useLogin();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -63,48 +65,23 @@ export default function LoginForm() {
 
     setIsLoading(true);
 
-    try {
-      const { data, error } = await fine.auth.signIn.email(
-        {
-          email: formData.email,
-          password: formData.password,
-          callbackURL: "/",
-          rememberMe: formData.rememberMe,
-        },
-        {
-          onRequest: () => {
-            setIsLoading(true);
-          },
-          onSuccess: () => {
-            toast({
-              title: "Success",
-              description: "You have been signed in successfully.",
-            });
-            navigate("/dashboard");
-          },
-          onError: (ctx) => {
-            toast({
-              title: "Error",
-              description: ctx.error.message,
-              variant: "destructive",
-            });
-          },
-        }
-      );
-    } catch (error: any) {
+    const result = await login(formData.email, formData.password);
+    if (result.error) {
       toast({
         title: "Error",
-        description: error.message || "Invalid email or password.",
+        description: result.error,
         variant: "destructive",
       });
-    } finally {
-      setIsLoading(false);
+    } else {
+      toast({
+        title: "Success",
+        description: "You have been signed in successfully.",
+      });
+      navigate("/dashboard");
     }
-  };
 
-  if (!fine) return <Navigate to='/dashboard' />;
-  const { isPending, data } = fine.auth.useSession();
-  if (!isPending && data) return <Navigate to='/dashboard' />;
+    setIsLoading(false);
+  };
 
   return (
     <div className='container mx-auto flex h-screen items-center justify-center py-10'>

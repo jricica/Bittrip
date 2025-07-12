@@ -1,3 +1,4 @@
+// @ts-check
 // server.js (ESM)
 import express from 'express';
 import cors from 'cors';
@@ -12,8 +13,59 @@ const supabase = createClient(
 );
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+  })
+);
 app.use(express.json());
+
+// --- AUTH ROUTES ---
+/** @typedef {{email: string, password: string}} AuthBody */
+
+app.post('/api/signup', async (req, res) => {
+  /** @type {AuthBody} */
+  const { email, password } = req.body;
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) throw error;
+    res.json({ user: data.user });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/login', async (req, res) => {
+  /** @type {AuthBody} */
+  const { email, password } = req.body;
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+    res.json({ session: data.session, user: data.user });
+  } catch (err) {
+    res.status(401).json({ error: err.message });
+  }
+});
+
+app.post('/api/logout', async (_req, res) => {
+  try {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+app.get('/api/users', async (req, res) => {
+  try {
+    const { data, error } = await supabase.auth.admin.listUsers();
+    if (error) throw error;
+    res.json({ users: data.users });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
 
 // --- USERS ---
 app.get('/users', async (req, res) => {
@@ -108,7 +160,7 @@ app.post('/plan-giftcards', async (req, res) => {
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`✅ API corriendo en http://localhost:${PORT}`);
 });
