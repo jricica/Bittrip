@@ -67,7 +67,7 @@ export default function SignupForm() {
 
     setIsLoading(true);
 
-    const result = await signup(formData.email, formData.password);
+    const result = await signup(formData.email, formData.password, formData.name);
     if (result.error) {
       toast({ title: "Error", description: result.error, variant: "destructive" });
     } else {
