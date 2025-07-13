@@ -161,7 +161,10 @@ app.post('/gift-cards', async (req, res) => {
 
 // --- ALL GIFT CARDS (DAILY API SYNC) ---
 app.get('/all-giftcards', async (req, res) => {
-  const { data, error } = await supabase.from('all_giftcards').select('*').eq('is_active', true);
+  const { data, error } = await supabase
+    .from('all_giftcards')
+    .select('*')
+    .eq('in_stock', true);
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
@@ -185,15 +188,17 @@ app.post('/plans', async (req, res) => {
 // --- PLAN GIFT CARDS (CART ITEMS) ---
 app.get('/plan-giftcards', async (req, res) => {
   const { plan_id } = req.query;
-  const query = supabase.from('plan_giftcards').select('*');
-  if (plan_id) query.eq('plan_id', plan_id);
+  let query = supabase.from('plan_giftcards').select('*');
+  if (plan_id) query = query.eq('plan_id', plan_id);
 
   const { data, error } = await query;
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
 app.post('/plan-giftcards', async (req, res) => {
-  const { data, error } = await supabase.from('plan_giftcards').insert([req.body]);
+  const { data, error } = await supabase
+    .from('plan_giftcards')
+    .insert([req.body]);
   error ? res.status(500).json({ error: error.message }) : res.json(data);
 });
 
