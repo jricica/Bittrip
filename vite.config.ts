@@ -2,12 +2,13 @@ import react from "@vitejs/plugin-react";
 import path from "path";
 import { defineConfig } from "vite";
 
-export default defineConfig({
+// https://vitejs.dev/config/
+export default defineConfig(({ mode }) => ({
   plugins: [react()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: "/Bittrip/", // 👈 usa el nombre EXACTO del repo
-});
+  base: mode === "production" ? "/Bittrip/" : "/", // 👈 solo usa /Bittrip en build
+}));
