@@ -29,7 +29,7 @@ createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <ThemeProvider>
-        <BrowserRouter>
+        <BrowserRouter basename="/Bittrip">
           <AuthProvider>
             <Routes>
               <Route path="/" element={<AuthRedirect />} />
