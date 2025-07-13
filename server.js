@@ -22,29 +22,65 @@ app.use(
 app.use(express.json());
 
 // --- AUTH ROUTES ---
-/** @typedef {{email: string, password: string}} AuthBody */
+/** @typedef {{email: string, password: string, name?: string, profileImage?: string}} AuthBody */
 
 app.post('/api/signup', async (req, res) => {
   /** @type {AuthBody} */
-  const { email, password } = req.body;
+  const { email, password, name, profileImage } = req.body;
+
+  if (!email || !password || !name) {
+    return res.status(400).json({ error: 'email, password and name are required' });
+  }
+
   try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) throw error;
-    res.json({ user: data.user });
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
+
+    if (signUpError) return res.status(400).json({ error: signUpError.message });
+
+    const userId = signUpData.user.id;
+    const { data: insertData, error: insertError } = await supabase
+      .from('users')
+      .insert({ id: userId, email, name, profileImage })
+      .select()
+      .single();
+
+    if (insertError) return res.status(500).json({ error: insertError.message });
+
+    res.status(201).json({ user: insertData });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
 app.post('/api/login', async (req, res) => {
   /** @type {AuthBody} */
   const { email, password } = req.body;
+
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) throw error;
-    res.json({ session: data.session, user: data.user });
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    if (signInError) return res.status(401).json({ error: signInError.message });
+
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('*')
+      .eq('id', signInData.user.id)
+      .single();
+
+    if (profileError) return res.status(500).json({ error: profileError.message });
+
+    res.json({
+      session: signInData.session,
+      user: { ...signInData.user, ...profile },
+    });
   } catch (err) {
-    res.status(401).json({ error: err.message });
+    res.status(500).json({ error: err.message });
   }
 });
 
