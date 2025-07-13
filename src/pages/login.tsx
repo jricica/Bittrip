@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useAuth } from "@/context/AuthContext"; // ✅ importamos el contexto
 
 export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,12 +21,12 @@ export default function LoginForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { setUser } = useAuth(); // ✅ usamos el contexto
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // Clear error when user types
     if (errors[name]) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -73,6 +74,7 @@ export default function LoginForm() {
         variant: "destructive",
       });
     } else {
+      setUser(result.user); // ✅ actualizamos el contexto con el usuario
       toast({
         title: "Success",
         description: "You have been signed in successfully.",
